@@ -44,7 +44,7 @@ body::-webkit-scrollbar {
   text-transform: uppercase;
   color: #ffffff;
   text-shadow: 0 2px 4px rgba(255, 255, 255, 0.2);
-  margin: 0 0 40px; /* Increased margin */
+  margin: 0 0 40px;
 }
 
 .group-picture {
@@ -56,7 +56,7 @@ body::-webkit-scrollbar {
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   animation: fadeIn 1s ease-in;
-  transition: transform 1.5s ease; /* Increased duration */
+  transition: transform 1.5s ease;
 }
 
 .group-picture:hover {
@@ -98,33 +98,47 @@ body::-webkit-scrollbar {
 }
 
 .profile:nth-child(1) {
-  background-color: #ffedd5; /* Soft orange for Amit */
+  background-color: #ffedd5; /* Soft orange for Mark */
   border: 1px solid #fed7aa;
 }
 
 .profile:nth-child(2) {
-  background-color: #ccfbf1; /* Light teal for Rohan */
+  background-color: #ccfbf1; /* Light teal for Rudy */
   border: 1px solid #99f6e4;
 }
 
 .profile:nth-child(3) {
-  background-color: #fefcbf; /* Pale yellow for Vikram */
+  background-color: #fefcbf; /* Pale yellow for Danny */
   border: 1px solid #fef08a;
 }
 
 .profile:nth-child(4) {
-  background-color: #fce7f3; /* Light pink for Sanya */
+  background-color: #fce7f3; /* Light pink for Elle */
   border: 1px solid #f9a8d4;
 }
 
 .profile:nth-child(5) {
-  background-color: #d1fae5; /* Mint green for Neha */
+  background-color: #d1fae5; /* Mint green for Paulz */
   border: 1px solid #6ee7b7;
 }
 
 .profile:nth-child(6) {
-  background-color: #ede9fe; /* Lavender for Karan */
+  background-color: #ede9fe; /* Lavender for Sylvia */
   border: 1px solid #c4b5fd;
+}
+
+.profile-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2rem;
+  color: #1f2937;
+  text-transform: uppercase;
+  margin: 0 0 20px;
+  opacity: 0;
+  transition: opacity 0.5s ease 0.1s;
+}
+
+.profile.active .profile-title {
+  opacity: 1;
 }
 
 .profile-picture {
@@ -138,7 +152,7 @@ body::-webkit-scrollbar {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin: 0 auto;
   opacity: 0;
-  transition: opacity 0.5s ease, transform 1.5s ease; /* Increased duration */
+  transition: opacity 0.5s ease, transform 1.5s ease;
 }
 
 .profile.active .profile-picture {
@@ -155,7 +169,7 @@ body::-webkit-scrollbar {
   font-size: 1.2rem;
   color: #1f2937;
   text-align: center;
-  margin-top: 30px; /* Increased margin */
+  margin-top: 30px;
   max-width: 80%;
   opacity: 0;
   transition: opacity 0.5s ease 0.2s;
@@ -179,6 +193,10 @@ body::-webkit-scrollbar {
     max-width: 40vw;
     max-height: 40vh;
   }
+  .profile-title {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
   .profile-picture {
     max-width: 40vw;
     max-height: 40vh;
@@ -201,6 +219,10 @@ body::-webkit-scrollbar {
   .group-picture {
     max-width: 30vw;
     max-height: 30vh;
+  }
+  .profile-title {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
   }
   .profile-picture {
     max-width: 30vw;
