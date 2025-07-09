@@ -6,6 +6,7 @@ body {
   font-family: Arial, sans-serif;
   overflow-y: auto;
   scrollbar-width: none; /* Firefox */
+  overscroll-behavior: auto; /* Allow browser UI on overscroll */
 }
 
 body::-webkit-scrollbar {
@@ -16,6 +17,7 @@ body::-webkit-scrollbar {
   min-height: 100vh;
   width: 100%;
   max-width: 100vw;
+  position: relative;
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.5s ease, transform 0.5s ease;
