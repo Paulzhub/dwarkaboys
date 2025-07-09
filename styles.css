@@ -43,7 +43,7 @@ body::-webkit-scrollbar {
   font-size: 4rem;
   text-transform: uppercase;
   color: #ffffff;
-  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.2);
+  text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #fff, 0 0 40px rgba(255, 255, 255, 0.8); /* White neon glow */
   margin: 0 0 40px;
 }
 
@@ -100,33 +100,48 @@ body::-webkit-scrollbar {
 }
 
 .profile:nth-child(1) {
-  background-color: #ffedd5; /* Soft orange for Mark */
-  border: 1px solid #fed7aa;
+  background-color: #239FA9; /* Cyan for Mark */
+  border: 1px solid #1C8087;
+}
+
+.profile:nth-child(1) .profile-title,
+.profile:nth-child(1) .description {
+  color: #f7e9e9; /* White for Mark */
 }
 
 .profile:nth-child(2) {
-  background-color: #ccfbf1; /* Light teal for Rudy */
-  border: 1px solid #99f6e4;
+  background-color: #E34664; /* Red-pink for Rudy */
+  border: 1px solid #C93B56;
 }
 
 .profile:nth-child(3) {
-  background-color: #fefcbf; /* Pale yellow for Danny */
-  border: 1px solid #fef08a;
+  background-color: #2178AE; /* Blue for Danny */
+  border: 1px solid #1B6190;
+}
+
+.profile:nth-child(3) .profile-title,
+.profile:nth-child(3) .description {
+  color: #f7e9e9; /* White for Danny */
 }
 
 .profile:nth-child(4) {
-  background-color: #fce7f3; /* Light pink for Elle */
-  border: 1px solid #f9a8d4;
+  background-color: #F5E6DB; /* Light beige for Elle */
+  border: 1px solid #E8D2C2;
 }
 
 .profile:nth-child(5) {
-  background-color: #d1fae5; /* Mint green for Paulz */
-  border: 1px solid #6ee7b7;
+  background-color: #6A1D3A; /* Deep red for Paulz */
+  border: 1px solid #57162F;
+}
+
+.profile:nth-child(5) .profile-title,
+.profile:nth-child(5) .description {
+  color: #f7e9e9; /* White for Paulz */
 }
 
 .profile:nth-child(6) {
-  background-color: #ede9fe; /* Lavender for Sylvia */
-  border: 1px solid #c4b5fd;
+  background-color: #B9D2D1; /* Light teal for Sylvia */
+  border: 1px solid #A3BABA;
 }
 
 .profile-title {
