@@ -8,7 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let touchEndY = 0;
 
   // Ensure landing page is shown on refresh
-  window.scrollTo(0, 0);
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  profilesSection.scrollTo({ left: 0, behavior: 'instant' });
 
   // IntersectionObserver for landing-to-profiles transition
   const observer = new IntersectionObserver(
@@ -62,32 +63,30 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Mouse wheel scrolling
-  profilesSection.addEventListener('wheel', (event) => {
-    // Check if profiles section is fully in view
+  window.addEventListener('wheel', (event) => {
     const profilesRect = profilesSection.getBoundingClientRect();
     const isProfilesFullyVisible = profilesRect.top <= 0 && profilesRect.bottom >= window.innerHeight;
 
     if (!isProfilesFullyVisible) {
-      return; // Allow vertical scrolling
+      return; // Allow vertical scrolling to landing or profiles
     }
 
     event.preventDefault();
     if (isScrolling) return;
 
-    // Handle horizontal scrolling for profiles
-    if (event.deltaY > 0) {
+    if (event.deltaY > 0 && currentProfileIndex < profiles.length - 1) {
       scrollToProfile(currentProfileIndex + 1);
-    } else if (event.deltaY < 0) {
+    } else if (event.deltaY < 0 && currentProfileIndex > 0) {
       scrollToProfile(currentProfileIndex - 1);
     }
   }, { passive: false });
 
   // Touch scrolling for mobile (up/down swipes)
-  profilesSection.addEventListener('touchstart', (event) => {
+  window.addEventListener('touchstart', (event) => {
     touchStartY = event.touches[0].clientY;
   }, { passive: true });
 
-  profilesSection.addEventListener('touchmove', (event) => {
+  window.addEventListener('touchmove', (event) => {
     touchEndY = event.touches[0].clientY;
     const profilesRect = profilesSection.getBoundingClientRect();
     const isProfilesFullyVisible = profilesRect.top <= 0 && profilesRect.bottom >= window.innerHeight;
@@ -99,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     event.preventDefault(); // Prevent native scrolling for vertical swipes
   }, { passive: false });
 
-  profilesSection.addEventListener('touchend', () => {
+  window.addEventListener('touchend', () => {
     const deltaY = touchStartY - touchEndY;
     const swipeThreshold = 50; // Minimum swipe distance
 
@@ -107,9 +106,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const isProfilesFullyVisible = profilesRect.top <= 0 && profilesRect.bottom >= window.innerHeight;
 
     if (isProfilesFullyVisible && !isScrolling) {
-      if (deltaY > swipeThreshold) {
+      if (deltaY > swipeThreshold && currentProfileIndex < profiles.length - 1) {
         scrollToProfile(currentProfileIndex + 1); // Upward swipe -> next profile
-      } else if (deltaY < -swipeThreshold) {
+      } else if (deltaY < -swipeThreshold && currentProfileIndex > 0) {
         scrollToProfile(currentProfileIndex - 1); // Downward swipe -> previous profile
       }
     }
