@@ -82,8 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
       event.preventDefault();
       scrollToProfile(currentProfileIndex - 1);
     }
-    // Allow vertical scrolling to landing only at Profile 1
-    else if (event.deltaY < 0 && currentProfileIndex === 0) {
+    // Allow vertical scrolling to landing only at Profile 1 with scrollLeft at 0
+    else if (event.deltaY < 0 && currentProfileIndex === 0 && profilesSection.scrollLeft <= 0) {
       return; // Allow default vertical scrolling to landing
     }
   }, { passive: false });
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('touchend', () => {
     const deltaY = touchStartY - touchEndY;
-    const swipeThreshold = 50; // Minimum swipe distance
+    const swipeThreshold = 75; // Increased for reliability
 
     if (isProfilesFullyVisible && !isScrolling) {
       if (deltaY > swipeThreshold && currentProfileIndex < profiles.length - 1) {
@@ -117,8 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
         scrollToProfile(currentProfileIndex - 1); // Downward swipe -> previous profile
       }
     }
-    // Allow vertical scrolling to landing only at Profile 1
-    else if (deltaY < -swipeThreshold && currentProfileIndex === 0) {
+    // Allow vertical scrolling to landing only at Profile 1 with scrollLeft at 0
+    else if (deltaY < -swipeThreshold && currentProfileIndex === 0 && profilesSection.scrollLeft <= 0) {
       return; // Allow default vertical scrolling to landing
     }
   }, { passive: true });
