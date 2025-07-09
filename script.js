@@ -1,242 +1,148 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@400&display=swap');
+document.addEventListener('DOMContentLoaded', () => {
+  const landing = document.getElementById('landing');
+  const profilesSection = document.getElementById('profiles');
+  const profiles = document.querySelectorAll('.profile');
+  const firstProfile = profiles[0];
+  let currentProfileIndex = 0;
+  let isScrolling = false;
+  let touchStartY = 0;
+  let touchEndY = 0;
+  let isProfilesFullyVisible = false;
+  let isProfile1FullyVisible = false;
 
-body {
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-  overflow-y: auto;
-  scrollbar-width: none; /* Firefox */
-  overscroll-behavior: auto; /* Allow browser UI on overscroll */
-  background-color: #000000; /* Fallback for landing page */
-}
+  // Ensure landing page is shown on refresh
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  profilesSection.scrollTo({ left: 0, behavior: 'instant' });
 
-body::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
-}
+  // IntersectionObserver for landing-to-profiles transition
+  const sectionObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && entry.intersectionRatio >= 1.0) {
+          isProfilesFullyVisible = entry.target === profilesSection;
+          entry.target.classList.add('active');
+          if (entry.target === profilesSection) {
+            // Reset to first profile when profiles section is fully in view
+            scrollToProfile(0);
+          }
+        } else {
+          if (entry.target === profilesSection) {
+            isProfilesFullyVisible = false;
+          }
+          entry.target.classList.remove('active');
+        }
+      });
+    },
+    { threshold: 1.0 } // Stricter threshold for full visibility
+  );
 
-#landing, #profiles {
-  min-height: 100vh;
-  width: 100%;
-  max-width: 100vw;
-  position: relative;
-  will-change: transform; /* Optimize rendering */
-}
+  sectionObserver.observe(landing);
+  sectionObserver.observe(profilesSection);
 
-#landing.active, #profiles.active {
-  transform: translateY(0);
-}
+  // IntersectionObserver for Profile 1 visibility
+  const profile1Observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        isProfile1FullyVisible = entry.isIntersecting && entry.intersectionRatio >= 1.0;
+      });
+    },
+    { root: profilesSection, threshold: 1.0 }
+  );
 
-#landing {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: #000000;
-  text-align: center;
-  padding: 20px;
-  box-sizing: border-box;
-  overflow: hidden;
-}
+  profile1Observer.observe(firstProfile);
 
-#landing h1 {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 4rem;
-  text-transform: uppercase;
-  color: #ffffff;
-  text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #fff, 0 0 40px rgba(255, 255, 255, 0.8); /* White neon glow */
-  margin: 0 0 40px;
-}
+  // IntersectionObserver for profile-to-profile transitions
+  const profileObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+          currentProfileIndex = Array.from(profiles).indexOf(entry.target);
+        } else {
+          entry.target.classList.remove('active');
+        }
+      });
+    },
+    { root: profilesSection, threshold: 0.8 }
+  );
 
-.group-picture {
-  width: auto;
-  max-width: 50vw;
-  max-height: 50vh;
-  height: auto;
-  object-fit: contain;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  animation: fadeIn 1s ease-in;
-  transition: transform 1.5s ease;
-  will-change: transform; /* Optimize rendering */
-}
+  profiles.forEach((profile) => profileObserver.observe(profile));
 
-.group-picture:hover {
-  transform: scale(1.2);
-  z-index: 1;
-}
-
-#profiles {
-  display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  height: auto;
-  scrollbar-width: none; /* Firefox */
-}
-
-#profiles::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
-}
-
-.profile {
-  width: 100vw;
-  max-width: 100vw;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  box-sizing: border-box;
-  scroll-snap-align: center;
-  overflow: hidden;
-  transform: translateX(10px);
-  transition: transform 0.5s ease;
-  will-change: transform; /* Optimize rendering */
-}
-
-.profile.active {
-  transform: translateX(0);
-}
-
-.profile:nth-child(1) {
-  background-color: #239FA9; /* Cyan for Mark */
-  border: 1px solid #1C8087;
-}
-
-.profile:nth-child(1) .profile-title,
-.profile:nth-child(1) .description {
-  color: #f7e9e9; /* White for Mark */
-}
-
-.profile:nth-child(2) {
-  background-color: #E34664; /* Red-pink for Rudy */
-  border: 1px solid #C93B56;
-}
-
-.profile:nth-child(3) {
-  background-color: #2178AE; /* Blue for Danny */
-  border: 1px solid #1B6190;
-}
-
-.profile:nth-child(3) .profile-title,
-.profile:nth-child(3) .description {
-  color: #f7e9e9; /* White for Danny */
-}
-
-.profile:nth-child(4) {
-  background-color: #F5E6DB; /* Light beige for Elle */
-  border: 1px solid #E8D2C2;
-}
-
-.profile:nth-child(5) {
-  background-color: #6A1D3A; /* Deep red for Paulz */
-  border: 1px solid #57162F;
-}
-
-.profile:nth-child(5) .profile-title,
-.profile:nth-child(5) .description {
-  color: #f7e9e9; /* White for Paulz */
-}
-
-.profile:nth-child(6) {
-  background-color: #B9D2D1; /* Light teal for Sylvia */
-  border: 1px solid #A3BABA;
-}
-
-.profile-title {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 2rem;
-  color: #1f2937;
-  text-transform: uppercase;
-  margin: 0 0 20px;
-}
-
-.profile-picture {
-  width: auto;
-  max-width: 50vw;
-  max-height: 50vh;
-  height: auto;
-  object-fit: contain;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin: 0 auto;
-  opacity: 1; /* Ensure full opacity */
-  transition: transform 1.5s ease;
-  will-change: transform; /* Optimize rendering */
-}
-
-.profile-picture:hover {
-  transform: scale(1.2);
-  z-index: 1;
-}
-
-.description {
-  font-family: 'Poppins', sans-serif;
-  font-size: 1.2rem;
-  color: #1f2937;
-  text-align: center;
-  margin-top: 30px;
-  max-width: 80%;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@media (max-width: 768px) {
-  #landing h1 {
-    font-size: 2.5rem;
-    margin-bottom: 30px;
+  // Scroll to profile function
+  function scrollToProfile(index) {
+    if (index >= 0 && index < profiles.length && !isScrolling) {
+      isScrolling = true;
+      profilesSection.scrollTo({
+        left: index * window.innerWidth,
+        behavior: 'smooth'
+      });
+      currentProfileIndex = index;
+      setTimeout(() => { isScrolling = false; }, 500); // Match transition duration
+    }
   }
-  .group-picture {
-    max-width: 40vw;
-    max-height: 40vh;
-  }
-  .profile-title {
-    font-size: 1.5rem;
-    margin-bottom: 15px;
-  }
-  .profile-picture {
-    max-width: 40vw;
-    max-height: 40vh;
-  }
-  .description {
-    font-size: 1rem;
-    max-width: 90%;
-    margin-top: 25px;
-  }
-  #landing, #profiles, .profile {
-    transition-duration: 0.4s;
-  }
-}
 
-@media (max-width: 480px) {
-  #landing h1 {
-    font-size: 2rem;
-    margin-bottom: 20px;
-  }
-  .group-picture {
-    max-width: 30vw;
-    max-height: 30vh;
-  }
-  .profile-title {
-    font-size: 1.2rem;
-    margin-bottom: 10px;
-  }
-  .profile-picture {
-    max-width: 30vw;
-    max-height: 30vh;
-  }
-  .profile {
-    padding: 10px;
-  }
-  .description {
-    font-size: 0.9rem;
-    margin-top: 20px;
-  }
-  #landing, #profiles, .profile {
-    transition-duration: 0.3s;
-  }
-}
+  // Mouse wheel scrolling
+  window.addEventListener('wheel', (event) => {
+    // Allow vertical scrolling if profiles section is not fully visible
+    if (!isProfilesFullyVisible) {
+      return; // Allow default vertical scrolling
+    }
+
+    // Handle horizontal scrolling within profiles
+    if (event.deltaY > 0 && currentProfileIndex < profiles.length - 1) {
+      event.preventDefault();
+      scrollToProfile(currentProfileIndex + 1);
+    } else if (event.deltaY < 0 && currentProfileIndex > 0) {
+      event.preventDefault();
+      scrollToProfile(currentProfileIndex - 1);
+    }
+    // Allow vertical scrolling to landing only at Profile 1 when fully visible
+    else if (event.deltaY < 0 && currentProfileIndex === 0 && isProfile1FullyVisible && profilesSection.scrollLeft <= 0) {
+      return; // Allow default vertical scrolling to landing
+    }
+  }, { passive: false });
+
+  // Touch scrolling for mobile (up/down swipes)
+  window.addEventListener('touchstart', (event) => {
+    touchStartY = event.touches[0].clientY;
+  }, { passive: true });
+
+  window.addEventListener('touchmove', (event) => {
+    touchEndY = event.touches[0].clientY;
+    // Allow vertical scrolling if profiles section is not fully visible
+    if (!isProfilesFullyVisible) {
+      return; // Allow default vertical scrolling
+    }
+
+    // Prevent default only for significant vertical swipes
+    if (Math.abs(touchStartY - touchEndY) > 10 && currentProfileIndex > 0) {
+      event.preventDefault();
+    }
+  }, { passive: false });
+
+  window.addEventListener('touchend', () => {
+    const deltaY = touchStartY - touchEndY;
+    const swipeThreshold = 75; // Increased for reliability
+
+    if (isProfilesFullyVisible && !isScrolling) {
+      if (deltaY > swipeThreshold && currentProfileIndex < profiles.length - 1) {
+        scrollToProfile(currentProfileIndex + 1); // Upward swipe -> next profile
+      } else if (deltaY < -swipeThreshold && currentProfileIndex > 0) {
+        scrollToProfile(currentProfileIndex - 1); // Downward swipe -> previous profile
+      }
+    }
+    // Allow vertical scrolling to landing only at Profile 1 when fully visible
+    else if (deltaY < -swipeThreshold && currentProfileIndex === 0 && isProfile1FullyVisible && profilesSection.scrollLeft <= 0) {
+      return; // Allow default vertical scrolling to landing
+    }
+  }, { passive: true });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowRight') {
+      scrollToProfile(currentProfileIndex + 1);
+    } else if (event.key === 'ArrowLeft') {
+      scrollToProfile(currentProfileIndex - 1);
+    }
+  });
+});
