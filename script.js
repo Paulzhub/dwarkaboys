@@ -4,6 +4,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const profiles = document.querySelectorAll('.profile');
   let currentProfileIndex = 0;
   let isScrolling = false;
+  let touchStartY = 0;
+  let touchEndY = 0;
+
+  // Ensure landing page is shown on refresh
+  window.scrollTo(0, 0);
 
   // IntersectionObserver for landing-to-profiles transition
   const observer = new IntersectionObserver(
@@ -11,6 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add('active');
+          if (entry.target === profilesSection) {
+            // Reset to first profile when profiles section is fully in view
+            scrollToProfile(0);
+          }
         } else {
           entry.target.classList.remove('active');
         }
@@ -52,24 +61,59 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Mouse wheel and touch scrolling
+  // Mouse wheel scrolling
   profilesSection.addEventListener('wheel', (event) => {
+    // Check if profiles section is fully in view
+    const profilesRect = profilesSection.getBoundingClientRect();
+    const isProfilesFullyVisible = profilesRect.top <= 0 && profilesRect.bottom >= window.innerHeight;
+
+    if (!isProfilesFullyVisible) {
+      return; // Allow vertical scrolling
+    }
+
     event.preventDefault();
     if (isScrolling) return;
 
-    // Allow vertical scrolling at boundaries
-    if ((event.deltaY < 0 && currentProfileIndex === 0) || 
-        (event.deltaY > 0 && currentProfileIndex === profiles.length - 1)) {
-      return; // Let browser handle vertical scroll
-    }
-
-    // Handle horizontal scrolling
+    // Handle horizontal scrolling for profiles
     if (event.deltaY > 0) {
       scrollToProfile(currentProfileIndex + 1);
     } else if (event.deltaY < 0) {
       scrollToProfile(currentProfileIndex - 1);
     }
   }, { passive: false });
+
+  // Touch scrolling for mobile (up/down swipes)
+  profilesSection.addEventListener('touchstart', (event) => {
+    touchStartY = event.touches[0].clientY;
+  }, { passive: true });
+
+  profilesSection.addEventListener('touchmove', (event) => {
+    touchEndY = event.touches[0].clientY;
+    const profilesRect = profilesSection.getBoundingClientRect();
+    const isProfilesFullyVisible = profilesRect.top <= 0 && profilesRect.bottom >= window.innerHeight;
+
+    if (!isProfilesFullyVisible) {
+      return; // Allow vertical scrolling
+    }
+
+    event.preventDefault(); // Prevent native scrolling for vertical swipes
+  }, { passive: false });
+
+  profilesSection.addEventListener('touchend', () => {
+    const deltaY = touchStartY - touchEndY;
+    const swipeThreshold = 50; // Minimum swipe distance
+
+    const profilesRect = profilesSection.getBoundingClientRect();
+    const isProfilesFullyVisible = profilesRect.top <= 0 && profilesRect.bottom >= window.innerHeight;
+
+    if (isProfilesFullyVisible && !isScrolling) {
+      if (deltaY > swipeThreshold) {
+        scrollToProfile(currentProfileIndex + 1); // Upward swipe -> next profile
+      } else if (deltaY < -swipeThreshold) {
+        scrollToProfile(currentProfileIndex - 1); // Downward swipe -> previous profile
+      }
+    }
+  }, { passive: true });
 
   // Keyboard navigation
   document.addEventListener('keydown', (event) => {
