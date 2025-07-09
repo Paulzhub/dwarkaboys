@@ -2,18 +2,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const landing = document.getElementById('landing');
   const profilesSection = document.getElementById('profiles');
   const profiles = document.querySelectorAll('.profile');
+  const firstProfile = profiles[0];
   let currentProfileIndex = 0;
   let isScrolling = false;
   let touchStartY = 0;
   let touchEndY = 0;
   let isProfilesFullyVisible = false;
+  let isProfile1FullyVisible = false;
 
   // Ensure landing page is shown on refresh
   window.scrollTo({ top: 0, behavior: 'instant' });
   profilesSection.scrollTo({ left: 0, behavior: 'instant' });
 
   // IntersectionObserver for landing-to-profiles transition
-  const observer = new IntersectionObserver(
+  const sectionObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting && entry.intersectionRatio >= 1.0) {
@@ -34,8 +36,20 @@ document.addEventListener('DOMContentLoaded', () => {
     { threshold: 1.0 } // Stricter threshold for full visibility
   );
 
-  observer.observe(landing);
-  observer.observe(profilesSection);
+  sectionObserver.observe(landing);
+  sectionObserver.observe(profilesSection);
+
+  // IntersectionObserver for Profile 1 visibility
+  const profile1Observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        isProfile1FullyVisible = entry.isIntersecting && entry.intersectionRatio >= 1.0;
+      });
+    },
+    { root: profilesSection, threshold: 1.0 }
+  );
+
+  profile1Observer.observe(firstProfile);
 
   // IntersectionObserver for profile-to-profile transitions
   const profileObserver = new IntersectionObserver(
@@ -82,8 +96,8 @@ document.addEventListener('DOMContentLoaded', () => {
       event.preventDefault();
       scrollToProfile(currentProfileIndex - 1);
     }
-    // Allow vertical scrolling to landing only at Profile 1 with scrollLeft at 0
-    else if (event.deltaY < 0 && currentProfileIndex === 0 && profilesSection.scrollLeft <= 0) {
+    // Allow vertical scrolling to landing only at Profile 1 when fully visible
+    else if (event.deltaY < 0 && currentProfileIndex === 0 && isProfile1FullyVisible && profilesSection.scrollLeft <= 0) {
       return; // Allow default vertical scrolling to landing
     }
   }, { passive: false });
@@ -101,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Prevent default only for significant vertical swipes
-    if (Math.abs(touchStartY - touchEndY) > 10) {
+    if (Math.abs(touchStartY - touchEndY) > 10 && currentProfileIndex > 0) {
       event.preventDefault();
     }
   }, { passive: false });
@@ -117,8 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
         scrollToProfile(currentProfileIndex - 1); // Downward swipe -> previous profile
       }
     }
-    // Allow vertical scrolling to landing only at Profile 1 with scrollLeft at 0
-    else if (deltaY < -swipeThreshold && currentProfileIndex === 0 && profilesSection.scrollLeft <= 0) {
+    // Allow vertical scrolling to landing only at Profile 1 when fully visible
+    else if (deltaY < -swipeThreshold && currentProfileIndex === 0 && isProfile1FullyVisible && profilesSection.scrollLeft <= 0) {
       return; // Allow default vertical scrolling to landing
     }
   }, { passive: true });
